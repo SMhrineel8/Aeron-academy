@@ -1,14 +1,23 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { User, Target, BookOpen, Zap, ArrowRight, Play, Trophy, Clock, Star, Book, Users, Award, ChevronRight, BarChart3, Settings, LogOut } from 'lucide-react';
+import React from 'react';
 
-function SageMascot({ state, message }: { state: string; message: string }) {
+interface SageMascotProps {
+  state: 'excited' | 'thinking' | 'happy' | 'encouraging' | string;
+  message: string;
+}
+
+export default function SageMascot({ state, message }: SageMascotProps) {
   const getEmoji = () => {
     switch (state) {
-      case 'excited': return '🦅';
-      case 'thinking': return '🤔';
-      case 'happy': return '😊';
-      case 'encouraging': return '💪';
-      default: return '🦅';
+      case 'excited':
+        return '🦅';
+      case 'thinking':
+        return '🤔';
+      case 'happy':
+        return '😊';
+      case 'encouraging':
+        return '💪';
+      default:
+        return '🦅';
     }
   };
 
