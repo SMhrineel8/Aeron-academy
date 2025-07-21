@@ -1,5 +1,6 @@
+// package.json
 {
-  "name": "learnly-app",
+  "name": "aeron-academy",
   "version": "1.0.0",
   "private": true,
   "scripts": {
