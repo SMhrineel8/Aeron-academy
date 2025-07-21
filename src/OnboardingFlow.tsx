@@ -433,3 +433,59 @@ function Dashboard({ profile }: { profile: any }) {
     </div>
   );
 }
+interface UserProfile {
+  name: string;
+  interests: string[];
+  level: string;
+  learningStyle: string;
+  isOnboarded: boolean;
+}
+
+export default function App() {
+  const [currentStep, setCurrentStep] = useState(1);
+  const [userProfile, setUserProfile] = useState<UserProfile>({
+    name: '',
+    interests: [],
+    level: '',
+    learningStyle: '',
+    isOnboarded: false
+  });
+
+  const finishOnboarding = () => {
+    setUserProfile(prev => ({ ...prev, isOnboarded: true }));
+  };
+
+  if (!userProfile.isOnboarded) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
+        <OnboardingFlow
+          step={currentStep}
+          setStep={setCurrentStep}
+          profile={userProfile}
+          setProfile={setUserProfile}
+          finish={finishOnboarding}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
+      <Dashboard profile={userProfile} />
+    </div>
+  );
+}
+Improve
+Explain
+Smart, efficient model for everyday use Learn more
+
+Artifacts
+
+Aeron Academy - Complete Learning Platform
+Click to open component • 2 versions
+
+Complete Configuration Files for Aeron Academy
+Click to open code • 1 version
+Content
+
+// src/OnboardingFlow.tsx import React, { useEffect, useRef, useState } from 'react'; import SageMascot from './SageMascot'; import { User, Target, BookOpen, Zap, ArrowRight } from 'lucide-react'; export default function OnboardingFlow({ step, setStep, profile, setProfile, finish }: { s
