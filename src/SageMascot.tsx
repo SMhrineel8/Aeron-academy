@@ -5,8 +5,7 @@ interface SageMascotProps {
   message: string;
 }
 
-// Named export
-export function SageMascot({ state, message }: SageMascotProps) {
+export default function SageMascot({ state, message }: SageMascotProps) {
   const getEmoji = () => {
     switch (state) {
       case 'excited':      return '🦅';
@@ -26,6 +25,3 @@ export function SageMascot({ state, message }: SageMascotProps) {
     </div>
   );
 }
-
-// Also default-export it so either import style works
-export default SageMascot;
