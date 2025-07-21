@@ -5,19 +5,15 @@ interface SageMascotProps {
   message: string;
 }
 
-export default function SageMascot({ state, message }: SageMascotProps) {
+// Named export
+export function SageMascot({ state, message }: SageMascotProps) {
   const getEmoji = () => {
     switch (state) {
-      case 'excited':
-        return '🦅';
-      case 'thinking':
-        return '🤔';
-      case 'happy':
-        return '😊';
-      case 'encouraging':
-        return '💪';
-      default:
-        return '🦅';
+      case 'excited':      return '🦅';
+      case 'thinking':     return '🤔';
+      case 'happy':        return '😊';
+      case 'encouraging':  return '💪';
+      default:             return '🦅';
     }
   };
 
@@ -30,3 +26,6 @@ export default function SageMascot({ state, message }: SageMascotProps) {
     </div>
   );
 }
+
+// Also default-export it so either import style works
+export default SageMascot;
