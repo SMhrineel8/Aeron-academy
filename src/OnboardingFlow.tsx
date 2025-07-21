@@ -475,17 +475,3 @@ export default function App() {
     </div>
   );
 }
-Improve
-Explain
-Smart, efficient model for everyday use Learn more
-
-Artifacts
-
-Aeron Academy - Complete Learning Platform
-Click to open component • 2 versions
-
-Complete Configuration Files for Aeron Academy
-Click to open code • 1 version
-Content
-
-// src/OnboardingFlow.tsx import React, { useEffect, useRef, useState } from 'react'; import SageMascot from './SageMascot'; import { User, Target, BookOpen, Zap, ArrowRight } from 'lucide-react'; export default function OnboardingFlow({ step, setStep, profile, setProfile, finish }: { s
