@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 
 // Placeholder: import your actual SageMascot component here
-import SageMascot from './SageMascot'; // Make sure this path is correct
+import { SageMascot } from './SageMascot';// Make sure this path is correct
 
 interface UserProfile {
   name: string;
