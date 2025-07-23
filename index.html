@@ -1,11 +1,82 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Learnly</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learnly - Master Any Skill</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-  <div id="root"></div>
-  <script type="module" src="/src/main.tsx"></script>
+    <header>
+        <nav class="navbar">
+            <div class="logo">Learnly <span class="pro">Pro</span></div>
+            <div class="hamburger-menu">
+                <i class="fas fa-bars"></i>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#" data-page="courses">Courses</a></li>
+                <li><a href="#" data-page="book-to-game">Book to Game</a></li>
+                <li><a href="#" data-page="fun-quiz">Fun Quiz</a></li>
+            </ul>
+            <div class="search-bar">
+                <input type="text" placeholder="Enter any skill (e.g., React, Python, Digital Marketing, Data Science)...">
+                <button>Ready to help!</button>
+            </div>
+            <div class="user-icons">
+                <i class="fas fa-bell"></i>
+                <i class="fas fa-user-circle"></i>
+            </div>
+        </nav>
+    </header>
+
+    <main id="main-content">
+        <section id="home-section" class="content-section active">
+            <div class="hero-section">
+                <h1>Master Any Skill with AI-Powered Curriculum</h1>
+                <p>Get a ₹1,00,000+ worth professional curriculum for free. Just enter any skill above!</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-calendar-alt"></i>
+                    <h3>8-Week Structure</h3>
+                    <p>Organized weekly modules</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-book-open"></i>
+                    <h3>Free Resources</h3>
+                    <p>YouTube, MIT OCW, GitHub</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-graduation-cap"></i>
+                    <h3>Career Ready</h3>
+                    <p>Portfolio & resume boost</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="courses-section" class="content-section">
+            <h2>Our Courses</h2>
+            <div id="course-list">
+                <div class="course-card">
+                    <h3>Corporate Finance: A Class Preview</h3>
+                    <p>Learn the basics of corporate finance from this preview.</p>
+                    <a href="https://www.youtube.com/watch?v=N91AXV7LMrg" target="_blank">Watch on YouTube</a>
+                </div>
+                </div>
+        </section>
+
+        <section id="book-to-game-section" class="content-section">
+            <h2>Book to Game</h2>
+            <p>This section will feature interactive games based on learning materials.</p>
+            </section>
+
+        <section id="fun-quiz-section" class="content-section">
+            <h2>Fun Quiz</h2>
+            <p>Test your knowledge with fun quizzes!</p>
+            </section>
+    </main>
+
+    <script src="script.js"></script>
 </body>
 </html>
