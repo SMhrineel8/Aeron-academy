@@ -121,7 +121,7 @@ export default function CoursesSection({
                             <span className="font-semibold">Value:</span> {curriculum.marketValue}
                         </div>
                         <div className="bg-white/10 rounded-xl p-3 text-sm">
-                            <span className="font-semibold">XP Potential:</span> {curriculum.weeks?.reduce((acc: number, week: any) => acc + week.modules?.reduce((macc: number, module: any) => macc + (module.lessons?.reduce((lacc: number, lesson: any) => lacc + (lesson.xpPoints || 0), 0) || 0), 0), 0) || 0}
+                            <span className="font-semibold">XP Potential:</span> {curriculum.weeks?.reduce((acc: number, week: any) => acc + week.modules?.reduce((macc: number, module: any) => macc + (module.lessons?.reduce((lacc: number, lesson: any) => lacc + (lesson.xpPoints || 0), 0) || 0), 0) || 0), 0) || 0}
                         </div>
                     </div>
                     <button
