@@ -1,7 +1,6 @@
 // src/components/CoursesSection.tsx
 import React, { useState, useMemo } from 'react'; // Import useMemo
-import { Search, Play, Trophy, Clock, Loader2 } from 'lucide-react';
-import CourseCard from './CourseCard';
+import { Search, Play, Trophy, Clock, Loader2, BookOpen } from 'lucide-react';
 
 export default function CoursesSection({
     profile,
