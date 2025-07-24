@@ -2,14 +2,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Search, Flame, Trophy, Menu, X, BookOpen, FileText, BarChart3, HelpCircle } from 'lucide-react';
 import SageMascot from './SageMascot';
-import Sidebar from './components/Sidebar'; // New import
-import CoursesSection from './components/CoursesSection'; // New import
-import QuizSection from './components/QuizSection'; // New import
-import RankingsSection from './components/RankingsSection'; // New import
+import Sidebar from './components/Sidebar';
+import CoursesSection from './components/CoursesSection';
+import QuizSection from './components/QuizSection';
+import RankingsSection from './components/RankingsSection';
+import CourseDetailView from './components/CourseDetailView'; // New import
 
 export default function Dashboard({
     profile,
-    curriculum,
+    curriculum, // The latest generated curriculum
+    activeGeneratedCourse, // The curriculum currently being viewed/taken
+    setActiveGeneratedCourse, // Setter for activeGeneratedCourse
     quizzes,
     generateCurriculum,
     generateQuiz,
@@ -20,7 +23,7 @@ export default function Dashboard({
     setError
 }: any) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [activeSection, setActiveSection] = useState<'courses' | 'quiz' | 'rankings'>('courses'); // Default to courses
+    const [activeSection, setActiveSection] = useState<'courses' | 'quiz' | 'rankings'>('courses');
     const sidebarRef = useRef<HTMLDivElement>(null);
 
     // Close sidebar when clicking outside
@@ -37,12 +40,24 @@ export default function Dashboard({
     }, [sidebarRef]);
 
     const renderContent = () => {
+        if (activeGeneratedCourse && activeSection === 'courses') {
+            // If a generated course is active, show its detail view
+            return (
+                <CourseDetailView
+                    course={activeGeneratedCourse}
+                    setActiveGeneratedCourse={setActiveGeneratedCourse} // Allow navigating back
+                    setShowCelebration={setShowCelebration}
+                />
+            );
+        }
+
         switch (activeSection) {
             case 'courses':
                 return (
                     <CoursesSection
                         profile={profile}
-                        curriculum={curriculum}
+                        curriculum={curriculum} // Pass the latest generated curriculum
+                        setActiveGeneratedCourse={setActiveGeneratedCourse} // Pass setter to start course
                         generateCurriculum={generateCurriculum}
                         searching={searching}
                         sageState={sageState}
@@ -77,9 +92,10 @@ export default function Dashboard({
                 onNavigate={(section: 'courses' | 'quiz' | 'rankings') => {
                     setActiveSection(section);
                     setIsSidebarOpen(false);
+                    setActiveGeneratedCourse(null); // Reset active course when changing sections
                 }}
                 activeSection={activeSection}
-                sidebarRef={sidebarRef} // Pass ref to sidebar
+                sidebarRef={sidebarRef}
             />
 
             {/* Main Content Area */}
