@@ -212,8 +212,8 @@ export default function CourseDetailView({ course, setActiveGeneratedCourse, set
                         {expandedWeeks.has(week.weekNumber) && (
                             <div className="border-t border-gray-100">
                                 {/* Modules */}
-                                {module.lessons && module.lessons.length > 0 && module.lessons.map((lesson: Lesson, lessonIdx: number) => (
-                                    <div key={lessonIdx} className="p-6 border-b border-gray-50 last:border-b-0">
+                                {week.modules && week.modules.length > 0 && week.modules.map((module: Module, moduleIdx: number) => (
+                                    <div key={moduleIdx} className="p-6 border-b border-gray-50 last:border-b-0">
                                         <h3 className="text-lg font-semibold text-gray-800 mb-4">
                                             📚 {module.title}
                                         </h3>
