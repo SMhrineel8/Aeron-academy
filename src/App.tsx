@@ -1,3 +1,4 @@
+// src/App.tsx
 import React, { useState } from 'react';
 import OnboardingFlow from './OnboardingFlow';
 import Dashboard from './Dashboard';
@@ -18,8 +19,9 @@ export default function App() {
         totalPoints: 2450,
         currentLevel: 12
     });
-    const [curriculum, setCurriculum] = useState<any>(null);
-    const [quizzes, setQuizzes] = useState<any[]>([]); // New state for quizzes
+    const [curriculum, setCurriculum] = useState<any>(null); // This will hold the generated curriculum
+    const [activeGeneratedCourse, setActiveGeneratedCourse] = useState<any>(null); // New state to hold the course actively being viewed/taken
+    const [quizzes, setQuizzes] = useState<any[]>([]);
     const [searching, setSearching] = useState(false);
     const [sageState, setSageState] = useState<'base' | 'thinking' | 'excited' | 'celebrating'>('base');
     const [showCelebration, setShowCelebration] = useState(false);
@@ -31,106 +33,114 @@ export default function App() {
         setSearching(true);
         setSageState('thinking');
         setError('');
+        setCurriculum(null); // Clear previous curriculum
+        setActiveGeneratedCourse(null); // Clear active course
 
-        const enhancedPrompt = `You are my personal Course Mentor—an elite educator and coach with 20+ years' experience on Coursera, Udemy, edX, MIT OCW, etc.
+        const gamifiedPrompt = `You are an elite AI-powered learning companion, designed to create highly engaging, gamified, Duolingo-style learning experiences.
+Your goal is to design a comprehensive, 8-week, 1-2 hours/day curriculum for "${topic}", focusing on free, high-quality online resources.
 
-When I name any skill, design a ₹1,00,000+ worth, 100% free weekly curriculum for 1–2 hrs/day:
+**Key Requirements for the Curriculum:**
 
-1.  **Weeks → Modules → Lessons:**
-    • Goals for each week and module
-    • Daily plan (watch/read/practice)
-    • Assignments or mini-projects
+1.  **Gamified Structure:**
+    * Each lesson should have a clear "XP" (experience points) value.
+    * Include "dopamine-tapping" motivational messages after completing a lesson or a daily set of activities (e.g., "Fantastic! Ready for the next challenge?", "You're on fire! Keep going!").
+    * Suggest mini-challenges or quizzes within modules.
 
-2.  **Resources Only:** Free YouTube channels, educational blogs, MIT/Harvard OCW, GitHub repositories, PDFs—no paywalls or login required
+2.  **Resource Compilation (Crucial):**
+    * **Search and Curate:** Act as a super-intelligent search engine. For each lesson, find the *best, most relevant, and completely free* resources. Prioritize:
+        * **YouTube Playlists/Videos:** Search YouTube for comprehensive playlists or highly-rated individual videos. Provide direct YouTube URLs.
+        * **Google Search:** Find high-quality, free articles, blogs, official documentation, or open-courseware (e.g., MIT OpenCourseWare, Harvard CS50, freeCodeCamp, GeeksforGeeks, W3Schools). Provide direct URLs.
+        * **No Paywalls/Logins:** Absolutely no resources requiring payment, subscription, or login.
+    * **Specificity:** For YouTube, try to find specific videos within playlists if a playlist is too long, or suggest a starting point.
 
-3.  **Motivation & Coaching:**
-    • Why this skill matters in today's market
-    • Consistency tips and study habits
-    • Weekly checkpoints/assessments
+3.  **Curriculum Format:**
+    * **Weeks → Modules → Days → Lessons:**
+        * Each lesson has a `title`, `description`, `duration`, `xpPoints`, and `activities`.
+        * `activities` array contains objects with `type` (watch, read, practice), `title`, `url`, `duration`, and `completionMessage` (for gamification).
+    * **Weekly Assignments/Projects:** Short, practical assignments.
+    * **Weekly Checkpoints/Quizzes:** To reinforce learning.
+    * **Final Project:** A significant capstone project.
+    * **Career Impact:** Relevant job titles, resume points.
 
-4.  **Outcome Focus:**
-    • Clear end goal (job readiness, portfolio projects)
-    • Resume/CV improvement suggestions
-    • Showcase/portfolio recommendations
-
-**Constraints:**
-• Use only GitHub & Vercel for any code deployment
-• Focus on practical, industry-relevant skills
-• Include real-world project ideas
-
-**Topic:** ${topic}
-
-Please respond with a detailed JSON curriculum in this exact format:
+**Example of desired JSON structure (adapt and expand as needed):**
 {
-"title": "Master ${topic} in 8 Weeks",
-"description": "Professional-grade curriculum",
-"totalWeeks": 8,
-"dailyHours": "1-2 hours",
-"marketValue": "₹1,00,000+",
-"weeks": [
-{
-"weekNumber": 1,
-"title": "Week title",
-"goals": ["Goal 1", "Goal 2"],
-"modules": [
-{
-"title": "Module title",
-"lessons": [
-{
-"day": 1,
-"title": "Lesson title",
-"duration": "60 mins",
-"activities": [
-{
-"type": "watch",
-"title": "Video title",
-"url": "https://youtube.com/...",
-"duration": "20 mins"
-},
-{
-"type": "read",
-"title": "Article/Doc title",
-"url": "https://...",
-"duration": "15 mins"
-},
-{
-"type": "practice",
-"title": "Exercise title",
-"description": "What to do",
-"duration": "25 mins"
+    "title": "Master ${topic} in 8 Weeks",
+    "description": "A gamified, professional-grade curriculum designed to boost your skills and dopamine!",
+    "totalWeeks": 8,
+    "dailyHours": "1-2 hours",
+    "marketValue": "₹1,00,000+",
+    "weeks": [
+        {
+            "weekNumber": 1,
+            "title": "Week 1: Introduction to ${topic}",
+            "goals": ["Understand basics", "Set up environment"],
+            "modules": [
+                {
+                    "title": "Module 1.1: Core Concepts",
+                    "lessons": [
+                        {
+                            "day": 1,
+                            "title": "What is ${topic}?",
+                            "description": "Explore the fundamental ideas and applications.",
+                            "duration": "60 mins",
+                            "xpPoints": 50,
+                            "activities": [
+                                {
+                                    "type": "watch",
+                                    "title": "Introduction to ${topic} (Crash Course)",
+                                    "url": "https://www.youtube.com/watch?v=EXAMPLE_VIDEO_ID",
+                                    "duration": "20 mins",
+                                    "completionMessage": "Great start! You've unlocked the basics. Ready for more?"
+                                },
+                                {
+                                    "type": "read",
+                                    "title": "Official ${topic} Documentation: Getting Started",
+                                    "url": "https://docs.example.com/getting-started",
+                                    "duration": "30 mins",
+                                    "completionMessage": "Excellent! Reading is power. Keep building that knowledge!"
+                                },
+                                {
+                                    "type": "practice",
+                                    "title": "First Code Challenge: Hello World in ${topic}",
+                                    "description": "Write a simple program to display 'Hello World'.",
+                                    "duration": "10 mins",
+                                    "completionMessage": "Boom! First challenge conquered! Feeling that XP boost?"
+                                }
+                            ]
+                        }
+                        // ... more lessons for Day 2, Day 3 etc.
+                    ]
+                }
+            ],
+            "assignment": {
+                "title": "Week 1 Mini-Project: ${topic} Basics",
+                "description": "Create a simple interactive program demonstrating core concepts.",
+                "deliverable": "GitHub repository link",
+                "resources": ["Resource A", "Resource B"]
+            },
+            "checkpoint": "Self-assessment quiz on Week 1 topics."
+        }
+        // ... more weeks
+    ],
+    "finalProject": {
+        "title": "Capstone Project: Advanced ${topic} Application",
+        "description": "Build a full-stack application using ${topic}.",
+        "skills": ["Skill 1", "Skill 2"],
+        "portfolio": "Deploy on Vercel/GitHub Pages."
+    },
+    "careerImpact": {
+        "jobTitles": ["Junior ${topic} Developer", "${topic} Analyst"],
+        "resumePoints": ["Developed a gamified learning platform", "Curated 100+ free online resources"],
+        "salaryRange": "₹5,00,000 - ₹10,00,000 per annum"
+    }
 }
-]
-}
-]
-}
-],
-"assignment": {
-"title": "Week assignment",
-"description": "Detailed description",
-"deliverable": "What to create/submit",
-"resources": ["Resource 1", "Resource 2"]
-},
-"checkpoint": "Assessment criteria"
-}
-],
-"finalProject": {
-"title": "Capstone project",
-"description": "Major project description",
-"skills": ["Skill 1", "Skill 2"],
-"portfolio": "How to showcase this"
-},
-"careerImpact": {
-"jobTitles": ["Job 1", "Job 2"],
-"resumePoints": ["Achievement 1", "Achievement 2"],
-"salaryRange": "Expected range"
-}
-}`;
+`;
 
         try {
             const payload = {
                 contents: [{
                     parts: [{
-                        text: enhancedPrompt
+                        text: gamifiedPrompt
                     }]
                 }]
             };
@@ -157,10 +167,10 @@ Please respond with a detailed JSON curriculum in this exact format:
             const jsonMatch = content.match(/\{[\s\S]*\}/);
             if (jsonMatch) {
                 const curriculumData = JSON.parse(jsonMatch[0]);
-                setCurriculum(curriculumData);
+                setCurriculum(curriculumData); // Store the generated curriculum
                 setSageState('excited');
             } else {
-                throw new Error('Invalid response format');
+                throw new Error('Invalid response format: Could not parse JSON.');
             }
 
         } catch (error) {
@@ -172,7 +182,6 @@ Please respond with a detailed JSON curriculum in this exact format:
         }
     };
 
-    // New function to generate quizzes
     const generateQuiz = async (topic: string) => {
         setSearching(true);
         setSageState('thinking');
@@ -223,7 +232,7 @@ Respond in JSON format:
             const jsonMatch = content.match(/\{[\s\S]*\}/);
             if (jsonMatch) {
                 const quizData = JSON.parse(jsonMatch[0]);
-                setQuizzes(prev => [...prev, quizData]); // Add new quiz to the list
+                setQuizzes(prev => [...prev, quizData]);
                 setSageState('excited');
             } else {
                 throw new Error('Invalid quiz response format');
@@ -238,7 +247,6 @@ Respond in JSON format:
         }
     };
 
-
     return (
         <>
             {view === 'onboarding' ? (
@@ -252,10 +260,12 @@ Respond in JSON format:
             ) : (
                 <Dashboard
                     profile={profile}
-                    curriculum={curriculum}
-                    quizzes={quizzes} // Pass quizzes to Dashboard
+                    curriculum={curriculum} // Pass the generated curriculum
+                    activeGeneratedCourse={activeGeneratedCourse} // Pass the active course
+                    setActiveGeneratedCourse={setActiveGeneratedCourse} // Pass setter for active course
+                    quizzes={quizzes}
                     generateCurriculum={generateCurriculum}
-                    generateQuiz={generateQuiz} // Pass generateQuiz to Dashboard
+                    generateQuiz={generateQuiz}
                     searching={searching}
                     sageState={sageState}
                     setShowCelebration={setShowCelebration}
