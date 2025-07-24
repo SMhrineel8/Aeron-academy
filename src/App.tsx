@@ -90,7 +90,7 @@ Example of desired JSON structure:
                                     "title": "Introduction to ${topic} (Crash Course)",
                                     "url": "https://www.youtube.com/watch?v=EXAMPLE_VIDEO_ID",
                                     "duration": "20 mins",
-                                    "completionMessage": "Great start! You've unlocked the basics. Ready for more?"
+                                    "completionMessage": "Great start! You've unlocked the basics. Ready for more!"
                                 },
                                 {
                                     "type": "read",
