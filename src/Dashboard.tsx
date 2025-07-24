@@ -6,6 +6,7 @@ import Sidebar from './components/Sidebar';
 import CoursesSection from './components/CoursesSection';
 import QuizSection from './components/QuizSection';
 import RankingsSection from './components/RankingsSection';
+import CourseCard from './components/CourseCard';
 import CourseDetailView from './components/CourseDetailView'; // New import
 
 export default function Dashboard({
