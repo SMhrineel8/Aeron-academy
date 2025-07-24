@@ -8,7 +8,7 @@ interface CourseCardProps {
         title: string;
         category: string;
         description: string;
-        progress: number;
+        progress: number; // Still exists, but won't be displayed on card initially
         level: string;
         duration: string;
         imageUrl: string;
@@ -33,17 +33,8 @@ export default function CourseCard({ course }: CourseCardProps) {
             </div>
 
             <div className="px-5 py-4 bg-gray-50 mt-auto">
-                <div className="flex justify-between items-center text-sm font-medium text-gray-700 mb-2">
-                    <span>Progress</span>
-                    <span>{course.progress}%</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2.5">
-                    <div
-                        className="bg-green-400 h-2.5 rounded-full"
-                        style={{ width: `${course.progress}%` }}
-                    ></div>
-                </div>
-                <button className="mt-4 w-full bg-purple-500 text-white font-semibold py-2 rounded-lg hover:bg-purple-600 transition-colors flex items-center justify-center">
+                {/* Progress bar removed from initial card view as per request */}
+                <button className="mt-2 w-full bg-purple-500 text-white font-semibold py-2 rounded-lg hover:bg-purple-600 transition-colors flex items-center justify-center">
                     <Play className="w-4 h-4 mr-2" /> Start Course
                 </button>
             </div>
