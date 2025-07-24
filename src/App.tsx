@@ -39,30 +39,30 @@ export default function App() {
         const gamifiedPrompt = `You are an elite AI-powered learning companion, designed to create highly engaging, gamified, Duolingo-style learning experiences.
 Your goal is to design a comprehensive, 8-week, 1-2 hours/day curriculum for "${topic}", focusing on free, high-quality online resources.
 
-**Key Requirements for the Curriculum:**
+Key Requirements for the Curriculum:
 
-1.  **Gamified Structure:**
+1. Gamified Structure:
     * Each lesson should have a clear "XP" (experience points) value.
     * Include "dopamine-tapping" motivational messages after completing a lesson or a daily set of activities (e.g., "Fantastic! Ready for the next challenge?", "You're on fire! Keep going!").
     * Suggest mini-challenges or quizzes within modules.
 
-2.  **Resource Compilation (Crucial):**
-    * **Search and Curate:** Act as a super-intelligent search engine. For each lesson, find the *best, most relevant, and completely free* resources. Prioritize:
-        * **YouTube Playlists/Videos:** Search YouTube for comprehensive playlists or highly-rated individual videos. Provide direct YouTube URLs.
-        * **Google Search:** Find high-quality, free articles, blogs, official documentation, or open-courseware (e.g., MIT OpenCourseWare, Harvard CS50, freeCodeCamp, GeeksforGeeks, W3Schools). Provide direct URLs.
-        * **No Paywalls/Logins:** Absolutely no resources requiring payment, subscription, or login.
-    * **Specificity:** For YouTube, try to find specific videos within playlists if a playlist is too long, or suggest a starting point.
+2. Resource Compilation (Crucial):
+    * Search and Curate: Act as a super-intelligent search engine. For each lesson, find the best, most relevant, and completely free resources. Prioritize:
+        * YouTube Playlists/Videos: Search YouTube for comprehensive playlists or highly-rated individual videos. Provide direct YouTube URLs.
+        * Google Search: Find high-quality, free articles, blogs, official documentation, or open-courseware (e.g., MIT OpenCourseWare, Harvard CS50, freeCodeCamp, GeeksforGeeks, W3Schools). Provide direct URLs.
+        * No Paywalls/Logins: Absolutely no resources requiring payment, subscription, or login.
+    * Specificity: For YouTube, try to find specific videos within playlists if a playlist is too long, or suggest a starting point.
 
-3.  **Curriculum Format:**
-    * **Weeks → Modules → Days → Lessons:**
-        * Each lesson has a `title`, `description`, `duration`, `xpPoints`, and `activities`.
-        * `activities` array contains objects with `type` (watch, read, practice), `title`, `url`, `duration`, and `completionMessage` (for gamification).
-    * **Weekly Assignments/Projects:** Short, practical assignments.
-    * **Weekly Checkpoints/Quizzes:** To reinforce learning.
-    * **Final Project:** A significant capstone project.
-    * **Career Impact:** Relevant job titles, resume points.
+3. Curriculum Format:
+    * Weeks → Modules → Days → Lessons:
+        * Each lesson has a \`title\`, \`description\`, \`duration\`, \`xpPoints\`, and \`activities\`.
+        * \`activities\` array contains objects with \`type\` (watch, read, practice), \`title\`, \`url\`, \`duration\`, and \`completionMessage\` (for gamification).
+    * Weekly Assignments/Projects: Short, practical assignments.
+    * Weekly Checkpoints/Quizzes: To reinforce learning.
+    * Final Project: A significant capstone project.
+    * Career Impact: Relevant job titles, resume points.
 
-**Example of desired JSON structure (adapt and expand as needed):**
+Example of desired JSON structure:
 {
     "title": "Master ${topic} in 8 Weeks",
     "description": "A gamified, professional-grade curriculum designed to boost your skills and dopamine!",
