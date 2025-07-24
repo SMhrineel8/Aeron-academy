@@ -1,5 +1,5 @@
 // src/components/CoursesSection.tsx
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react'; // Import useMemo
 import { Search, Play, Trophy, Clock, Loader2 } from 'lucide-react';
 import CourseCard from './CourseCard';
 
@@ -20,6 +20,25 @@ export default function CoursesSection({
             generateCurriculum(searchQuery);
         }
     };
+
+    // Calculate total XP potential using useMemo for efficiency
+    const totalXpPotential = useMemo(() => {
+        if (!curriculum || !curriculum.weeks) return 0;
+        let xp = 0;
+        curriculum.weeks.forEach((week: any) => {
+            if (week.modules) {
+                week.modules.forEach((module: any) => {
+                    if (module.lessons) {
+                        module.lessons.forEach((lesson: any) => {
+                            xp += lesson.xpPoints || 0;
+                        });
+                    }
+                });
+            }
+        });
+        return xp;
+    }, [curriculum]); // Recalculate only when curriculum changes
+
 
     // More Placeholder for trending courses
     const trendingCourses = [
@@ -121,7 +140,7 @@ export default function CoursesSection({
                             <span className="font-semibold">Value:</span> {curriculum.marketValue}
                         </div>
                         <div className="bg-white/10 rounded-xl p-3 text-sm">
-                            <span className="font-semibold">XP Potential:</span> {curriculum.weeks?.reduce((acc: number, week: any) => acc + week.modules?.reduce((macc: number, module: any) => macc + (module.lessons?.reduce((lacc: number, lesson: any) => lacc + (lesson.xpPoints || 0), 0) || 0), 0) || 0), 0) || 0}
+                            <span className="font-semibold">XP Potential:</span> {Math.round(totalXpPotential)}
                         </div>
                     </div>
                     <button
