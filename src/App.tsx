@@ -1,230 +1,279 @@
 // src/App.tsx
-
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import OnboardingFlow from './OnboardingFlow';
 import Dashboard from './Dashboard';
+import CelebrationOverlay from './CelebrationOverlay';
 
-interface UserProfile {
-  name: string;
-  level: number;
-  xp: number;
-  streak: number;
-  totalPoints: number;
-  completedCourses: number;
-  badges: string[];
-}
+// Use environment variable for API key
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || 'YOUR_GEMINI_API_KEY';
 
 export default function App() {
-  const [profile, setProfile] = useState<UserProfile>({
-    name: 'Alex',
-    level: 5,
-    xp: 2450,
-    streak: 12,
-    totalPoints: 8750,
-    completedCourses: 3,
-    badges: ['Early Bird', 'Streak Master', 'Quiz Champion']
-  });
+    const [view, setView] = useState<'onboarding' | 'dashboard'>('onboarding');
+    const [step, setStep] = useState(1);
+    const [profile, setProfile] = useState({
+        name: '',
+        interests: [] as string[],
+        level: 'beginner',
+        learningStyle: 'visual',
+        streak: 7,
+        totalPoints: 2450,
+        currentLevel: 12
+    });
+    const [curriculum, setCurriculum] = useState<any>(null); // This will hold the generated curriculum
+    const [activeGeneratedCourse, setActiveGeneratedCourse] = useState<any>(null); // New state to hold the course actively being viewed/taken
+    const [quizzes, setQuizzes] = useState<any[]>([]);
+    const [searching, setSearching] = useState(false);
+    const [sageState, setSageState] = useState<'base' | 'thinking' | 'excited' | 'celebrating'>('base');
+    const [showCelebration, setShowCelebration] = useState(false);
+    const [error, setError] = useState<string>('');
 
-  const [curriculum, setCurriculum] = useState(null);
-  const [activeGeneratedCourse, setActiveGeneratedCourse] = useState(null);
-  const [quizzes, setQuizzes] = useState([]);
-  const [searching, setSearching] = useState(false);
-  const [sageState, setSageState] = useState<'idle' | 'thinking' | 'excited'>('idle');
-  const [showCelebration, setShowCelebration] = useState(false);
-  const [error, setError] = useState('');
+    const generateCurriculum = async (topic: string) => {
+        if (!topic.trim()) return;
 
-  // Enhanced course generation with Gemini API
-  const generateCurriculum = async (topic: string, userLevel: string = 'beginner') => {
-    setSearching(true);
-    setSageState('thinking');
-    setError('');
+        setSearching(true);
+        setSageState('thinking');
+        setError('');
+        setCurriculum(null); // Clear previous curriculum
+        setActiveGeneratedCourse(null); // Clear active course
 
-    try {
-      const response = await fetch('/api/generate-course', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          topic,
-          userLevel
-        }),
-      });
+        const gamifiedPrompt = `You are an elite AI-powered learning companion, designed to create highly engaging, gamified, Duolingo-style learning experiences.
+Your goal is to design a comprehensive, 8-week, 1-2 hours/day curriculum for "${topic}", focusing on free, high-quality online resources.
 
-      const data = await response.json();
+Key Requirements for the Curriculum:
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to generate course');
-      }
+1. Gamified Structure:
+    * Each lesson should have a clear "XP" (experience points) value.
+    * Include "dopamine-tapping" motivational messages after completing a lesson or a daily set of activities (e.g., "Fantastic! Ready for the next challenge?", "You're on fire! Keep going!").
+    * Suggest mini-challenges or quizzes within modules.
 
-      if (data.success && data.course) {
-        setCurriculum(data.course);
-        setSageState('excited');
-        
-        // Show success message
-        setTimeout(() => {
-          setShowCelebration(true);
-          setTimeout(() => setShowCelebration(false), 3000);
-        }, 500);
-      } else {
-        throw new Error('Invalid course data received');
-      }
+2. Resource Compilation (Crucial):
+    * Search and Curate: Act as a super-intelligent search engine. For each lesson, find the best, most relevant, and completely free resources. Prioritize:
+        * YouTube Playlists/Videos: Search YouTube for comprehensive playlists or highly-rated individual videos. Provide direct YouTube URLs.
+        * Google Search: Find high-quality, free articles, blogs, official documentation, or open-courseware (e.g., MIT OpenCourseWare, Harvard CS50, freeCodeCamp, GeeksforGeeks, W3Schools). Provide direct URLs.
+        * No Paywalls/Logins: Absolutely no resources requiring payment, subscription, or login.
+    * Specificity: For YouTube, try to find specific videos within playlists if a playlist is too long, or suggest a starting point.
 
-    } catch (error) {
-      console.error('Error generating curriculum:', error);
-      setError(error instanceof Error ? error.message : 'Failed to generate course');
-      setSageState('idle');
-    } finally {
-      setSearching(false);
-      // Reset sage state after animation
-      setTimeout(() => setSageState('idle'), 3000);
-    }
-  };
+3. Curriculum Format:
+    * Weeks → Modules → Days → Lessons:
+        * Each lesson has a \`title\`, \`description\`, \`duration\`, \`xpPoints\`, and \`activities\`.
+        * \`activities\` array contains objects with \`type\` (watch, read, practice), \`title\`, \`url\`, \`duration\`, and \`completionMessage\` (for gamification).
+    * Weekly Assignments/Projects: Short, practical assignments.
+    * Weekly Checkpoints/Quizzes: To reinforce learning.
+    * Final Project: A significant capstone project.
+    * Career Impact: Relevant job titles, resume points.
 
-  // Enhanced quiz generation
-  const generateQuiz = async (topic: string, difficulty: string = 'medium') => {
-    setSearching(true);
-    setSageState('thinking');
-    setError('');
-
-    try {
-      const response = await fetch('/api/generate-quiz', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          topic,
-          difficulty,
-          questionCount: 10
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to generate quiz');
-      }
-
-      if (data.success && data.quiz) {
-        setQuizzes(prev => [...prev, data.quiz]);
-        setSageState('excited');
-        
-        // Update user stats
-        setProfile(prev => ({
-          ...prev,
-          totalPoints: prev.totalPoints + 100 // Bonus for generating quiz
-        }));
-      } else {
-        throw new Error('Invalid quiz data received');
-      }
-
-    } catch (error) {
-      console.error('Error generating quiz:', error);
-      setError(error instanceof Error ? error.message : 'Failed to generate quiz');
-      setSageState('idle');
-    } finally {
-      setSearching(false);
-      setTimeout(() => setSageState('idle'), 3000);
-    }
-  };
-
-  // Handle course completion and progress updates
-  const handleCourseProgress = (courseId: string, progress: number, xpGained: number) => {
-    setProfile(prev => ({
-      ...prev,
-      xp: prev.xp + xpGained,
-      totalPoints: prev.totalPoints + xpGained,
-      // Level up logic
-      level: Math.floor((prev.xp + xpGained) / 1000) + 1
-    }));
-
-    // Check for achievements
-    checkAchievements(progress, xpGained);
-  };
-
-  const checkAchievements = (progress: number, xpGained: number) => {
-    const achievements = [];
-
-    // Progress-based achievements
-    if (progress >= 0.25 && !profile.badges.includes('Quarter Master')) {
-      achievements.push('Quarter Master');
-    }
-    if (progress >= 0.5 && !profile.badges.includes('Halfway Hero')) {
-      achievements.push('Halfway Hero');
-    }
-    if (progress >= 1.0 && !profile.badges.includes('Course Conqueror')) {
-      achievements.push('Course Conqueror');
-    }
-
-    // XP-based achievements
-    if (profile.totalPoints + xpGained >= 10000 && !profile.badges.includes('XP Master')) {
-      achievements.push('XP Master');
-    }
-
-    // Streak-based achievements
-    if (profile.streak >= 30 && !profile.badges.includes('Dedication Legend')) {
-      achievements.push('Dedication Legend');
-    }
-
-    if (achievements.length > 0) {
-      setProfile(prev => ({
-        ...prev,
-        badges: [...prev.badges, ...achievements]
-      }));
-
-      // Show celebration for new achievements
-      setShowCelebration(true);
-      setTimeout(() => setShowCelebration(false), 3000);
-    }
-  };
-
-  // Simulate daily streak updates
-  useEffect(() => {
-    const updateStreak = () => {
-      const lastActive = localStorage.getItem('lastActiveDate');
-      const today = new Date().toDateString();
-      
-      if (lastActive !== today) {
-        localStorage.setItem('lastActiveDate', today);
-        
-        // Simple streak logic - in real app, you'd want more sophisticated tracking
-        if (lastActive && new Date(lastActive).getTime() === new Date(today).getTime() - 86400000) {
-          setProfile(prev => ({ ...prev, streak: prev.streak + 1 }));
+Example of desired JSON structure:
+{
+    "title": "Master ${topic} in 8 Weeks",
+    "description": "A gamified, professional-grade curriculum designed to boost your skills and dopamine!",
+    "totalWeeks": 8,
+    "dailyHours": "1-2 hours",
+    "marketValue": "₹1,00,000+",
+    "weeks": [
+        {
+            "weekNumber": 1,
+            "title": "Week 1: Introduction to ${topic}",
+            "goals": ["Understand basics", "Set up environment"],
+            "modules": [
+                {
+                    "title": "Module 1.1: Core Concepts",
+                    "lessons": [
+                        {
+                            "day": 1,
+                            "title": "What is ${topic}?",
+                            "description": "Explore the fundamental ideas and applications.",
+                            "duration": "60 mins",
+                            "xpPoints": 50,
+                            "activities": [
+                                {
+                                    "type": "watch",
+                                    "title": "Introduction to ${topic} (Crash Course)",
+                                    "url": "https://www.youtube.com/watch?v=EXAMPLE_VIDEO_ID",
+                                    "duration": "20 mins",
+                                    "completionMessage": "Great start! You've unlocked the basics. Ready for more!"
+                                },
+                                {
+                                    "type": "read",
+                                    "title": "Official ${topic} Documentation: Getting Started",
+                                    "url": "https://docs.example.com/getting-started",
+                                    "duration": "30 mins",
+                                    "completionMessage": "Excellent! Reading is power. Keep building that knowledge!"
+                                },
+                                {
+                                    "type": "practice",
+                                    "title": "First Code Challenge: Hello World in ${topic}",
+                                    "description": "Write a simple program to display 'Hello World'.",
+                                    "duration": "10 mins",
+                                    "completionMessage": "Boom! First challenge conquered! Feeling that XP boost?"
+                                }
+                            ]
+                        }
+                        // ... more lessons for Day 2, Day 3 etc.
+                    ]
+                }
+            ],
+            "assignment": {
+                "title": "Week 1 Mini-Project: ${topic} Basics",
+                "description": "Create a simple interactive program demonstrating core concepts.",
+                "deliverable": "GitHub repository link",
+                "resources": ["Resource A", "Resource B"]
+            },
+            "checkpoint": "Self-assessment quiz on Week 1 topics."
         }
-      }
+        // ... more weeks
+    ],
+    "finalProject": {
+        "title": "Capstone Project: Advanced ${topic} Application",
+        "description": "Build a full-stack application using ${topic}.",
+        "skills": ["Skill 1", "Skill 2"],
+        "portfolio": "Deploy on Vercel/GitHub Pages."
+    },
+    "careerImpact": {
+        "jobTitles": ["Junior ${topic} Developer", "${topic} Analyst"],
+        "resumePoints": ["Developed a gamified learning platform", "Curated 100+ free online resources"],
+        "salaryRange": "₹5,00,000 - ₹10,00,000 per annum"
+    }
+}
+`;
+
+        try {
+            const payload = {
+                contents: [{
+                    parts: [{
+                        text: gamifiedPrompt
+                    }]
+                }]
+            };
+
+            const response = await fetch(
+                `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error(`API Error: ${response.status}`);
+            }
+
+            const data = await response.json();
+            const content = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+            // Extract JSON from response
+            const jsonMatch = content.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                const curriculumData = JSON.parse(jsonMatch[0]);
+                setCurriculum(curriculumData); // Store the generated curriculum
+                setSageState('excited');
+            } else {
+                throw new Error('Invalid response format: Could not parse JSON.');
+            }
+
+        } catch (error) {
+            console.error('Error generating curriculum:', error);
+            setError('Failed to generate curriculum. Please check your API key and try again.');
+            setSageState('base');
+        } finally {
+            setSearching(false);
+        }
     };
 
-    updateStreak();
-  }, []);
+    const generateQuiz = async (topic: string) => {
+        setSearching(true);
+        setSageState('thinking');
+        setError('');
 
-  return (
-    <div className="min-h-screen">
-      {/* Celebration overlay */}
-      {showCelebration && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fadeIn">
-          <div className="bg-white rounded-3xl p-8 text-center animate-bounce">
-            <div className="text-6xl mb-4">🎉</div>
-            <h2 className="text-3xl font-bold text-purple-600 mb-2">Awesome!</h2>
-            <p className="text-gray-600">You're making incredible progress!</p>
-          </div>
-        </div>
-      )}
+        const quizPrompt = `Generate a short, multiple-choice quiz (5 questions) about "${topic}".
+Each question should have 4 options and indicate the correct answer.
+Respond in JSON format:
+{
+    "title": "Quiz on ${topic}",
+    "description": "Test your knowledge!",
+    "questions": [
+        {
+            "question": "Question text?",
+            "options": ["Option A", "Option B", "Option C", "Option D"],
+            "correctAnswer": "Option A"
+        }
+    ]
+}`;
 
-      <Dashboard
-        profile={profile}
-        curriculum={curriculum}
-        activeGeneratedCourse={activeGeneratedCourse}
-        setActiveGeneratedCourse={setActiveGeneratedCourse}
-        quizzes={quizzes}
-        generateCurriculum={generateCurriculum}
-        generateQuiz={generateQuiz}
-        searching={searching}
-        sageState={sageState}
-        setShowCelebration={setShowCelebration}
-        error={error}
-        setError={setError}
-        onCourseProgress={handleCourseProgress}
-      />
-    </div>
-  );
+        try {
+            const payload = {
+                contents: [{
+                    parts: [{
+                        text: quizPrompt
+                    }]
+                }]
+            };
+
+            const response = await fetch(
+                `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error(`API Error: ${response.status}`);
+            }
+
+            const data = await response.json();
+            const content = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+            const jsonMatch = content.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                const quizData = JSON.parse(jsonMatch[0]);
+                setQuizzes(prev => [...prev, quizData]);
+                setSageState('excited');
+            } else {
+                throw new Error('Invalid quiz response format');
+            }
+
+        } catch (error) {
+            console.error('Error generating quiz:', error);
+            setError('Failed to generate quiz. Please try again.');
+            setSageState('base');
+        } finally {
+            setSearching(false);
+        }
+    };
+
+    return (
+        <>
+            {view === 'onboarding' ? (
+                <OnboardingFlow
+                    step={step}
+                    setStep={setStep}
+                    profile={profile}
+                    setProfile={setProfile}
+                    finish={() => setView('dashboard')}
+                />
+            ) : (
+                <Dashboard
+                    profile={profile}
+                    curriculum={curriculum} // Pass the generated curriculum
+                    activeGeneratedCourse={activeGeneratedCourse} // Pass the active course
+                    setActiveGeneratedCourse={setActiveGeneratedCourse} // Pass setter for active course
+                    quizzes={quizzes}
+                    generateCurriculum={generateCurriculum}
+                    generateQuiz={generateQuiz}
+                    searching={searching}
+                    sageState={sageState}
+                    setShowCelebration={setShowCelebration}
+                    error={error}
+                    setError={setError}
+                />
+            )}
+            <CelebrationOverlay show={showCelebration} setShow={setShowCelebration} />
+        </>
+    );
 }
