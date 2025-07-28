@@ -134,5 +134,3 @@ export default function CourseCard({ course, onStartCourse }: CourseCardProps) {
     </div>
   );
 }
-Improve
-Explain
