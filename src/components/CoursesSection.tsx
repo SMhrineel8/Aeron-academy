@@ -226,4 +226,225 @@ export default function CoursesSection({
 
         {/* Course Header */}
         <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-3xl p-8 text-white shadow-lg">
-          <h1 className="text-4xl font-bold mb-3
+          <h1 className="text-4xl font-bold mb-3">{activeCourse.title}</h1>
+          <p className="text-xl opacity-90 mb-6">{activeCourse.description}</p>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="bg-white/10 rounded-xl p-4">
+              <div className="flex items-center space-x-2 mb-2">
+                <Trophy className="w-5 h-5" />
+                <span className="font-semibold">XP Earned</span>
+              </div>
+              <p className="text-2xl font-bold">{userXP}</p>
+            </div>
+            <div className="bg-white/10 rounded-xl p-4">
+              <div className="flex items-center space-x-2 mb-2">
+                <Target className="w-5 h-5" />
+                <span className="font-semibold">Progress</span>
+              </div>
+              <p className="text-2xl font-bold">{Math.round((completedActivities.size / (activeCourse.totalActivities || 1)) * 100)}%</p>
+            </div>
+            <div className="bg-white/10 rounded-xl p-4">
+              <div className="flex items-center space-x-2 mb-2">
+                <Clock className="w-5 h-5" />
+                <span className="font-semibold">Daily Time</span>
+              </div>
+              <p>{activeCourse.dailyHours}</p>
+            </div>
+            <div className="bg-white/10 rounded-xl p-4">
+              <div className="flex items-center space-x-2 mb-2">
+                <Star className="w-5 h-5" />
+                <span className="font-semibold">Total XP</span>
+              </div>
+              <p>{activeCourse.totalXP}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Weekly Curriculum */}
+        <div className="space-y-6">
+          {activeCourse.weeks?.map((week: any) => (
+            <div key={week.weekNumber} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="p-6 bg-gradient-to-r from-purple-50 to-blue-50">
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                  Week {week.weekNumber}: {week.title}
+                </h2>
+                <p className="text-gray-600 mb-4">Goals: {week.goals?.join(' • ')}</p>
+                <div className="bg-purple-100 rounded-lg p-3 inline-block">
+                  <span className="text-purple-800 font-semibold">Week XP: {week.totalWeekXP || 500}</span>
+                </div>
+              </div>
+
+              {/* Modules */}
+              <div className="p-6">
+                {week.modules?.map((module: any, moduleIdx: number) => (
+                  <div key={moduleIdx} className="mb-8 last:mb-0">
+                    <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                      <BookOpen className="w-5 h-5 mr-2 text-purple-600" />
+                      {module.title}
+                    </h3>
+
+                    {/* Lessons */}
+                    <div className="space-y-4">
+                      {module.lessons?.map((lesson: any, lessonIdx: number) => (
+                        <div key={lessonIdx} className="border border-gray-200 rounded-xl p-4 hover:shadow-sm transition-shadow">
+                          <div className="flex items-center justify-between mb-4">
+                            <h4 className="text-lg font-semibold text-gray-800">
+                              Day {lesson.day}: {lesson.title}
+                            </h4>
+                            <div className="text-sm text-purple-600 bg-purple-50 px-3 py-1 rounded-full font-semibold">
+                              {lesson.xpPoints} XP
+                            </div>
+                          </div>
+                          
+                          <p className="text-gray-600 mb-4">{lesson.description}</p>
+                          
+                          {/* Activities */}
+                          <div className="space-y-3">
+                            {lesson.activities?.map((activity: any, activityIdx: number) => {
+                              const activityId = `${week.weekNumber}-${moduleIdx}-${lessonIdx}-${activityIdx}`;
+                              const isCompleted = completedActivities.has(activityId);
+                              
+                              return (
+                                <div key={activityIdx} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                                  <button
+                                    onClick={() => handleActivityComplete(
+                                      activityId, 
+                                      lesson.xpPoints / lesson.activities.length,
+                                      activity.completionMessage || "Great job! Keep going! 🎉"
+                                    )}
+                                    className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all flex-shrink-0 ${
+                                      isCompleted 
+                                        ? 'bg-green-500 border-green-500 text-white' 
+                                        : 'border-gray-300 hover:border-purple-400 text-gray-500'
+                                    }`}
+                                  >
+                                    {isCompleted ? (
+                                      <CheckCircle className="w-4 h-4" />
+                                    ) : (
+                                      activity.type === 'watch' ? <Play className="w-4 h-4" /> :
+                                      activity.type === 'read' ? <BookOpen className="w-4 h-4" /> :
+                                      <Target className="w-4 h-4" />
+                                    )}
+                                  </button>
+                                  
+                                  <div className="flex-1">
+                                    <div className="flex items-center space-x-2">
+                                      <span className="font-medium text-gray-800">{activity.title}</span>
+                                      {activity.url && (
+                                        <a
+                                          href={activity.url}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="text-purple-600 hover:text-purple-800 text-sm font-medium"
+                                        >
+                                          📺 Open Link
+                                        </a>
+                                      )}
+                                    </div>
+                                    <p className="text-sm text-gray-600">{activity.duration}</p>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Default courses view
+  return (
+    <div className="space-y-8">
+      <h2 className="text-3xl font-bold text-gray-800">🚀 Discover Courses</h2>
+
+      {/* Course Search */}
+      <div className="relative max-w-2xl">
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+        <input
+          type="text"
+          placeholder="Search for courses (e.g., React, Python, Digital Marketing)..."
+          className="w-full pl-12 pr-12 py-3 border-2 border-purple-100 rounded-2xl bg-white focus:border-purple-300 focus:outline-none transition-all"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={handleSearch}
+        />
+        {searching && (
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 animate-spin h-6 w-6 border-2 border-purple-500 border-t-transparent rounded-full" />
+        )}
+      </div>
+
+      {/* Trending Courses */}
+      <div className="space-y-4">
+        <h3 className="text-2xl font-bold text-gray-800">🔥 Trending Courses</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {trendingCourses.map(course => (
+            <CourseCard key={course.id} course={course} />
+          ))}
+        </div>
+      </div>
+
+      {/* Generated Curriculum Preview */}
+      {curriculum && (
+        <div className="space-y-6">
+          <h3 className="text-2xl font-bold text-gray-800">✨ Your Custom Course: {curriculum.title}</h3>
+          <div className="bg-gradient-to-r from-green-500 to-blue-500 rounded-3xl p-6 text-white">
+            <p className="text-lg opacity-90 mb-4">{curriculum.description}</p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-white/10 rounded-xl p-3 text-sm">
+                <span className="font-semibold">Duration:</span> {curriculum.totalWeeks} weeks
+              </div>
+              <div className="bg-white/10 rounded-xl p-3 text-sm">
+                <span className="font-semibold">Daily Time:</span> {curriculum.dailyHours}
+              </div>
+              <div className="bg-white/10 rounded-xl p-3 text-sm">
+                <span className="font-semibold">Total XP:</span> {curriculum.totalXP}
+              </div>
+              <div className="bg-white/10 rounded-xl p-3 text-sm">
+                <span className="font-semibold">Value:</span> {curriculum.marketValue}
+              </div>
+            </div>
+            <button 
+              onClick={() => onStartCourse(curriculum)}
+              className="mt-4 w-full bg-white text-green-700 font-bold py-3 px-4 rounded-xl hover:bg-green-50 transition-colors flex items-center justify-center"
+            >
+              <Play className="w-5 h-5 mr-2" />
+              Start Learning Journey
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Motivational section */}
+      <div className="bg-gradient-to-r from-purple-100 to-blue-100 rounded-2xl p-6 text-center">
+        <h4 className="text-2xl font-bold text-gray-800 mb-2">Ready to Transform Your Career? 🚀</h4>
+        <p className="text-gray-600 mb-4">
+          Join thousands of learners who've mastered new skills with our gamified approach. 
+          Every expert was once a beginner!
+        </p>
+        <div className="flex justify-center space-x-6 text-sm text-gray-700">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-purple-600">50k+</div>
+            <div>Happy Learners</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-blue-600">1000+</div>
+            <div>Courses Available</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-green-600">95%</div>
+            <div>Success Rate</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
