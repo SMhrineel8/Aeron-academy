@@ -277,4 +277,139 @@ export class GeminiCourseGenerator {
     // Enhance course structure with gamification
     const gamifiedCourse = {
       ...courseStructure,
-      weeks
+      weeks: courseStructure.weeks.map((week: any, weekIndex: number) => ({
+        ...week,
+        modules: week.modules.map((module: any, moduleIndex: number) => ({
+          ...module,
+          lessons: module.lessons.map((lesson: any, lessonIndex: number) => {
+            // Match resources to lesson topics
+            const relevantResources = this.matchResourcesToLesson(lesson, resources);
+            
+            return {
+              ...lesson,
+              motivationalMessage: motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)],
+              activities: relevantResources.map((resource, activityIndex) => ({
+                type: resource.type === 'video' ? 'watch' : resource.type === 'article' ? 'read' : 'practice',
+                title: resource.title,
+                url: resource.url,
+                duration: resource.duration,
+                completionMessage: completionMessages[Math.floor(Math.random() * completionMessages.length)],
+                xpReward: Math.floor(lesson.xpPoints / relevantResources.length)
+              }))
+            };
+          })
+        }))
+      }))
+    };
+
+    return gamifiedCourse;
+  }
+
+  private matchResourcesToLesson(lesson: any, resources: CourseResource[]): CourseResource[] {
+    // Simple matching algorithm - can be enhanced with AI
+    const lessonKeywords = [
+      ...lesson.title.toLowerCase().split(' '),
+      ...lesson.description.toLowerCase().split(' '),
+      ...(lesson.topics || []).join(' ').toLowerCase().split(' ')
+    ].filter(word => word.length > 3);
+
+    const scoredResources = resources.map(resource => {
+      const resourceText = `${resource.title} ${resource.description}`.toLowerCase();
+      const score = lessonKeywords.reduce((acc, keyword) => {
+        return acc + (resourceText.includes(keyword) ? 1 : 0);
+      }, 0);
+
+      return { resource, score };
+    });
+
+    // Sort by relevance and take top 3
+    return scoredResources
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3)
+      .map(item => item.resource);
+  }
+
+  // Method to generate motivational streaks and achievements
+  async generateAchievements(completedActivities: number, totalActivities: number): Promise<any[]> {
+    const achievements = [
+      {
+        id: 'first_step',
+        title: 'First Step',
+        description: 'Completed your first activity!',
+        icon: '🎯',
+        unlocked: completedActivities >= 1,
+        xpBonus: 50
+      },
+      {
+        id: 'on_fire',
+        title: 'On Fire!',
+        description: 'Completed 5 activities in a row!',
+        icon: '🔥',
+        unlocked: completedActivities >= 5,
+        xpBonus: 100
+      },
+      {
+        id: 'unstoppable',
+        title: 'Unstoppable',
+        description: 'Completed 25% of the course!',
+        icon: '🚀',
+        unlocked: (completedActivities / totalActivities) >= 0.25,
+        xpBonus: 200
+      },
+      {
+        id: 'halfway_hero',
+        title: 'Halfway Hero',
+        description: 'Reached the halfway point!',
+        icon: '⭐',
+        unlocked: (completedActivities / totalActivities) >= 0.5,
+        xpBonus: 300
+      },
+      {
+        id: 'almost_there',
+        title: 'Almost There',
+        description: 'Completed 75% of the course!',
+        icon: '💪',
+        unlocked: (completedActivities / totalActivities) >= 0.75,
+        xpBonus: 400
+      },
+      {
+        id: 'course_master',
+        title: 'Course Master',
+        description: 'Completed the entire course!',
+        icon: '🏆',
+        unlocked: (completedActivities / totalActivities) >= 1.0,
+        xpBonus: 1000
+      }
+    ];
+
+    return achievements;
+  }
+
+  // Method to generate personalized encouragement based on progress
+  async generatePersonalizedEncouragement(progress: number, streak: number): Promise<string> {
+    let encouragement = '';
+
+    if (progress < 0.1) {
+      encouragement = "Every master was once a beginner. You've got this! 🌱";
+    } else if (progress < 0.25) {
+      encouragement = "Look at you go! The momentum is building! 🚀";
+    } else if (progress < 0.5) {
+      encouragement = "You're absolutely crushing it! Keep the energy up! ⚡";
+    } else if (progress < 0.75) {
+      encouragement = "Incredible progress! You're in the zone now! 🔥";
+    } else if (progress < 1.0) {
+      encouragement = "So close to mastery! The finish line is in sight! 🏁";
+    } else {
+      encouragement = "LEGEND! You've conquered this skill! What's next? 👑";
+    }
+
+    // Add streak bonus messages
+    if (streak >= 7) {
+      encouragement += " Your 7-day streak is PHENOMENAL! 🌟";
+    } else if (streak >= 3) {
+      encouragement += ` Your ${streak}-day streak is impressive! 💪`;
+    }
+
+    return encouragement;
+  }
+}
