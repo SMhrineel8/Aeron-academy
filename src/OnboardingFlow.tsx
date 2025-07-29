@@ -1,6 +1,6 @@
 // src/OnboardingFlow.tsx
 import React from 'react';
-import { Profile } from './App'; // Assuming Profile interface is defined and exported from App.tsx
+import { Profile } from './App'; // Correctly import Profile from App.tsx
 
 // Define the props interface for OnboardingFlow
 interface OnboardingFlowProps {
