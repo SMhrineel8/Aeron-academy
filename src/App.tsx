@@ -77,6 +77,17 @@ export interface Course {
     progress?: number; // Used for CourseCard if you decide to show overall course progress
 }
 
+// User Profile Interface - NEWLY EXPORTED
+export interface Profile {
+    name: string;
+    interests: string[];
+    level: 'beginner' | 'intermediate' | 'advanced'; // Added specific literal types for better type safety
+    learningStyle: 'visual' | 'auditory' | 'kinesthetic' | 'reading/writing'; // Added specific literal types
+    streak: number;
+    totalPoints: number;
+    currentLevel: number;
+}
+
 // User Progress Interface
 export interface UserProgress {
     streak: number;
@@ -94,7 +105,7 @@ export default function App() {
     // Current view state: 'onboarding' | 'dashboard' | 'course-detail' | 'learning'
     const [view, setView] = useState<'onboarding' | 'dashboard' | 'course-detail' | 'learning'>('onboarding');
     const [step, setStep] = useState(1);
-    const [profile, setProfile] = useState({
+    const [profile, setProfile] = useState<Profile>({ // Use the exported Profile type here
         name: '',
         interests: [] as string[],
         level: 'beginner',
