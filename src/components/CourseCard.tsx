@@ -1,3 +1,4 @@
+// src/components/CourseCard.tsx
 import React from 'react';
 import { Play, Trophy, Clock, Star, Users, Award } from 'lucide-react';
 
@@ -14,13 +15,13 @@ interface CourseCardProps {
     students?: number; // New field for student count
     imageUrl: string;
   };
-  onStartCourse?: (courseId: string) => void; // Optional callback for starting course
+  onStartCourse?: (courseId: string, courseData?: any) => void; // Added courseData for dynamic courses
 }
 
 export default function CourseCard({ course, onStartCourse }: CourseCardProps) {
   const handleStartCourse = () => {
     if (onStartCourse) {
-      onStartCourse(course.id);
+      onStartCourse(course.id, course.isGenerated ? course : null); // Pass course data if generated
     }
   };
 
@@ -55,7 +56,8 @@ export default function CourseCard({ course, onStartCourse }: CourseCardProps) {
       'Security': 'bg-red-100 text-red-800',
       'AI & ML': 'bg-orange-100 text-orange-800',
       'Business': 'bg-emerald-100 text-emerald-800',
-      'Cloud': 'bg-sky-100 text-sky-800'
+      'Cloud': 'bg-sky-100 text-sky-800',
+      'Learning Path': 'bg-purple-100 text-purple-800' // Added for generated courses
     };
     return colors[category as keyof typeof colors] || 'bg-gray-100 text-gray-800';
   };
@@ -69,14 +71,14 @@ export default function CourseCard({ course, onStartCourse }: CourseCardProps) {
             {course.category}
           </span>
         </div>
-        
+
         <div className="flex flex-col items-center">
-          <img 
-            src={course.imageUrl} 
-            alt={course.title} 
-            className="w-16 h-16 object-contain mb-4 group-hover:scale-110 transition-transform duration-300" 
+          <img
+            src={course.imageUrl}
+            alt={course.title}
+            className="w-16 h-16 object-contain mb-4 group-hover:scale-110 transition-transform duration-300"
           />
-          
+
           {/* Rating and Students */}
           <div className="flex items-center space-x-4 text-sm text-gray-600">
             {course.rating && (
@@ -100,7 +102,7 @@ export default function CourseCard({ course, onStartCourse }: CourseCardProps) {
         <h3 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-purple-600 transition-colors">
           {course.title}
         </h3>
-        
+
         <p className="text-sm text-gray-600 mb-4 flex-1 line-clamp-3">
           {course.description}
         </p>
@@ -112,18 +114,18 @@ export default function CourseCard({ course, onStartCourse }: CourseCardProps) {
               <Clock className="w-4 h-4 mr-1 text-blue-500" />
               <span>{course.duration}</span>
             </div>
-            
+
             <div className={`px-2 py-1 rounded-full text-xs font-medium border ${getLevelColor(course.level)}`}>
               {course.level}
             </div>
           </div>
 
           {/* Start Course Button */}
-          <button 
+          <button
             onClick={handleStartCourse}
             className="w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white font-semibold py-3 rounded-lg hover:from-purple-600 hover:to-blue-600 transition-all duration-300 flex items-center justify-center group-hover:shadow-lg transform group-hover:-translate-y-0.5"
           >
-            <Play className="w-4 h-4 mr-2" /> 
+            <Play className="w-4 h-4 mr-2" />
             Start Course
           </button>
         </div>
