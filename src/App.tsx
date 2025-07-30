@@ -1,4 +1,4 @@
-// App.tsx
+// src/App.tsx
 import React, { useState } from 'react';
 import OnboardingFlow from './OnboardingFlow';
 import Dashboard from './Dashboard';
@@ -32,26 +32,26 @@ export default function App() {
   const searchYouTube = async (query: string, maxResults: number = 5) => {
     try {
       const response = await fetch(
-        https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=${maxResults}&key=${YOUTUBE_API_KEY}
+        `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=${maxResults}&key=${YOUTUBE_API_KEY}` // Fixed: Added backticks
       );
-      
+
       if (!response.ok) {
         throw new Error('YouTube API request failed');
       }
-      
+
       const data = await response.json();
       return data.items.map((item: any) => ({
         title: item.snippet.title,
-        url: https://www.youtube.com/watch?v=${item.videoId},
+        url: `https://www.youtube.com/watch?v=${item.id.videoId}`, // Fixed: Added backticks and used item.id.videoId
         description: item.snippet.description,
         thumbnail: item.snippet.thumbnails.medium.url
       }));
     } catch (error) {
-      console.error('YouTube search error:', error);
+      console.error('Youtube error:', error);
       // Fallback to manual curated links if API fails
       return [
         {
-          title: ${query} - Complete Tutorial,
+          title: `${query} - Complete Tutorial`,
           url: 'https://www.youtube.com/watch?v=example',
           description: 'Comprehensive tutorial covering all aspects',
           thumbnail: 'https://img.youtube.com/vi/example/mqdefault.jpg'
@@ -69,8 +69,8 @@ export default function App() {
 
     try {
       // First, search for YouTube videos related to the topic
-      const youtubeVideos = await searchYouTube(${topic} tutorial complete course);
-      
+      const youtubeVideos = await searchYouTube(`${topic} tutorial complete course`);
+
       const enhancedPrompt = `You are an elite gamified learning companion, designed to create highly engaging, Duolingo-style learning experiences that tap into dopamine reward systems.
 
 Create a comprehensive, 8-week, 1-2 hours/day curriculum for "${topic}" using ONLY free resources.
@@ -78,27 +78,27 @@ Create a comprehensive, 8-week, 1-2 hours/day curriculum for "${topic}" using ON
 CRITICAL REQUIREMENTS:
 
 1. GAMIFICATION & DOPAMINE TRIGGERS:
-   - Each lesson has XP points (25-100 XP per lesson)
-   - Motivational completion messages that create excitement
-   - Progressive difficulty with clear achievements
-   - Streak tracking and reward systems
-   - Mini-challenges between lessons
+- Each lesson has XP points (25-100 XP per lesson)
+- Motivational completion messages that create excitement
+- Progressive difficulty with clear achievements
+- Streak tracking and reward systems
+- Mini-challenges between lessons
 
 2. RESOURCE CURATION:
-   Use these YouTube videos I found: ${JSON.stringify(youtubeVideos.slice(0, 3))}
-   
-   Also include:
-   - Free documentation sites
-   - Interactive coding platforms (CodePen, JSFiddle, Repl.it)
-   - GitHub repositories with tutorials
-   - MIT OpenCourseWare, freeCodeCamp, W3Schools
-   - NO paywalls or login requirements
+Use these YouTube videos I found: ${JSON.stringify(youtubeVideos.slice(0, 3))}
+
+Also include:
+- Free documentation sites
+- Interactive coding platforms (CodePen, JSFiddle, Repl.it)
+- GitHub repositories with tutorials
+- MIT OpenCourseWare, freeCodeCamp, W3Schools
+- NO paywalls or login requirements
 
 3. DOPAMINE-DRIVEN STRUCTURE:
-   - Start each day with a quick win (5-10 min easy task)
-   - Build complexity gradually
-   - Include celebration moments
-   - Progress bars and achievement unlocks
+- Start each day with a quick win (5-10 min easy task)
+- Build complexity gradually
+- Include celebration moments
+- Progress bars and achievement unlocks
 
 Respond with this EXACT JSON structure:
 
@@ -180,9 +180,7 @@ Respond with this EXACT JSON structure:
     "Every expert was once a beginner. You're making amazing progress! 💪",
     "Your future ${topic} career starts with this next lesson! 🚀"
   ]
-}
-
-IMPORTANT: Generate a complete 8-week curriculum with detailed daily lessons, not just Week 1.`;
+}`;
 
       const payload = {
         contents: [{
@@ -193,7 +191,7 @@ IMPORTANT: Generate a complete 8-week curriculum with detailed daily lessons, no
       };
 
       const response = await fetch(
-        https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY},
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`, // Fixed: Added backticks
         {
           method: 'POST',
           headers: {
@@ -204,7 +202,7 @@ IMPORTANT: Generate a complete 8-week curriculum with detailed daily lessons, no
       );
 
       if (!response.ok) {
-        throw new Error(API Error: ${response.status});
+        throw new Error(`API Error: ${response.status}`); // Fixed: Added backticks
       }
 
       const data = await response.json();
@@ -269,7 +267,7 @@ Respond in JSON format:
       };
 
       const response = await fetch(
-        https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY},
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`, // Fixed: Added backticks
         {
           method: 'POST',
           headers: {
@@ -280,7 +278,7 @@ Respond in JSON format:
       );
 
       if (!response.ok) {
-        throw new Error(API Error: ${response.status});
+        throw new Error(`API Error: ${response.status}`); // Fixed: Added backticks
       }
 
       const data = await response.json();
