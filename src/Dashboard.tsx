@@ -3,6 +3,9 @@ import React, { useState } from 'react';
 import CourseCard from './components/CourseCard'; // Assuming CourseCard is in a 'components' folder
 import { Users, BookOpen, BarChart, Trophy, Zap } from 'lucide-react'; // Example icons
 import SageAnimation from './SageAnimation'; // Assuming you have this or similar for your sage
+import React, { useState } from 'react';
+import CourseCard from './components/CourseCard';
+import CoursePlayer from './CoursePlayer'
 
 // Define a Course type to match what CourseCard expects
 interface Course {
